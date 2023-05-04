@@ -1,7 +1,7 @@
 {
-  "name": "yapi-to-typescript",
-  "version": "3.37.0",
-  "description": "根据 YApi 的接口定义生成 TypeScript/JavaScript 的接口类型及其请求函数代码。",
+  "name": "@geminate/yapi-to-typescript",
+  "version": "1.0.1",
+  "description": "个人使用，二次开发，根据 YApi 的接口定义生成 TypeScript/JavaScript 的接口类型及其请求函数代码。",
   "keywords": [
     "yapi",
     "codegen",
@@ -36,6 +36,7 @@
     "docs": "npm run docs:build && gh-pages --dist docs/dist --dest handbook",
     "docs:build": "dumi build",
     "docs:dev": "dumi dev",
+    "publish": "npm publish --access public",
     "release": "yarn testOnly && standard-version -a && yarn build && yarn docs && git push --follow-tags origin master && npm publish",
     "releaseBeta": "yarn testOnly && standard-version -a --release-as patch --prerelease beta && yarn build && git push --follow-tags origin master && npm publish --tag next",
     "test": "jest --coverage",
