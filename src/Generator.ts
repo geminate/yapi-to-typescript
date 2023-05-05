@@ -486,7 +486,7 @@ export class Generator {
                 // prettier-ignore
                 import type { RequestConfig, RequestFunctionRestArgs } from 'yapi-to-typescript'
                 // @ts-ignore
-                import request from ${JSON.stringify(
+                import request, { RequestOptions } from ${JSON.stringify(
                   getNormalizedRelativePath(
                     outputFilePath,
                     requestFunctionFilePath,
@@ -945,15 +945,10 @@ export class Generator {
             }
 
             ${genComment(title => `接口 ${title} 的 **请求函数**`)}
-            export const ${requestFunctionName} = ${COMPRESSOR_TREE_SHAKING_ANNOTATION} (
-              requestData${
-                isRequestDataOptional ? '?' : ''
-              }: ${requestDataTypeName},
-              ...args: UserRequestRestArgs
-            ) => {
-              return request<${responseDataTypeName}>(
-                prepare(${requestConfigName}, requestData),
-                ...args,
+            export const ${requestFunctionName} = ${COMPRESSOR_TREE_SHAKING_ANNOTATION} (options?: RequestOptions) => {
+              return request<${requestDataTypeName}, ${responseDataTypeName}>(
+                prepare(${requestConfigName}, {}),
+                options,
               )
             }
 
