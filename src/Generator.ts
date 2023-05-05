@@ -374,7 +374,7 @@ export class Generator {
             await fs.outputFile(
               requestFunctionFilePath,
               dedent`
-                import type { RequestFunctionParams } from 'yapi-to-typescript'
+                import type { RequestFunctionParams } from '@geminate/yapi-to-typescript'
 
                 export interface RequestOptions {
                   /**
@@ -421,7 +421,7 @@ export class Generator {
               requestHookMakerFilePath,
               dedent`
                 import { useState, useEffect } from 'react'
-                import type { RequestConfig } from 'yapi-to-typescript'
+                import type { RequestConfig } from '@geminate/yapi-to-typescript'
                 import type { Request } from ${JSON.stringify(
                   getNormalizedRelativePath(
                     requestHookMakerFilePath,
@@ -481,10 +481,10 @@ export class Generator {
               : dedent`
                 // @ts-ignore
                 // prettier-ignore
-                import { QueryStringArrayFormat, Method, RequestBodyType, ResponseBodyType, FileData, prepare } from 'yapi-to-typescript'
+                import { QueryStringArrayFormat, Method, RequestBodyType, ResponseBodyType, FileData, prepare } from '@geminate/yapi-to-typescript'
                 // @ts-ignore
                 // prettier-ignore
-                import type { RequestConfig, RequestFunctionRestArgs } from 'yapi-to-typescript'
+                import type { RequestConfig, RequestFunctionRestArgs } from '@geminate/yapi-to-typescript'
                 // @ts-ignore
                 import request, { RequestOptions } from ${JSON.stringify(
                   getNormalizedRelativePath(
