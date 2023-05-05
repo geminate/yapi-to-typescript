@@ -258,15 +258,6 @@ export class Generator {
                                 syntheticalConfig.typesOnly
                                   ? ''
                                   : dedent`
-                                      const mockUrl${categoryUID} = ${JSON.stringify(
-                                      syntheticalConfig.mockUrl,
-                                    )} as any
-                                      const devUrl${categoryUID} = ${JSON.stringify(
-                                      syntheticalConfig.devUrl,
-                                    )} as any
-                                      const prodUrl${categoryUID} = ${JSON.stringify(
-                                      syntheticalConfig.prodUrl,
-                                    )} as any
                                       const dataKey${categoryUID} = ${JSON.stringify(
                                       syntheticalConfig.dataKey,
                                     )} as any
@@ -481,11 +472,9 @@ export class Generator {
               : dedent`
                 // @ts-ignore
                 // prettier-ignore
-                import { QueryStringArrayFormat, Method, RequestBodyType, ResponseBodyType, FileData, prepare } from '@geminate/yapi-to-typescript'
+                import { Method } from '@geminate/yapi-to-typescript'
                 // @ts-ignore
                 // prettier-ignore
-                import type { RequestConfig, RequestFunctionRestArgs } from '@geminate/yapi-to-typescript'
-                // @ts-ignore
                 import request, { RequestOptions } from ${JSON.stringify(
                   getNormalizedRelativePath(
                     outputFilePath,
@@ -506,16 +495,11 @@ export class Generator {
                       )}
                     `
                 }
-
-                type UserRequestRestArgs = RequestFunctionRestArgs<typeof request>
-
-                // Request: 目前 React Hooks 功能有用到
-                export type Request<TRequestData, TRequestConfig extends RequestConfig, TRequestResult> = (
-                  TRequestConfig['requestDataOptional'] extends true
-                    ? (requestData?: TRequestData, ...args: RequestFunctionRestArgs<typeof request>) => TRequestResult
-                    : (requestData: TRequestData, ...args: RequestFunctionRestArgs<typeof request>) => TRequestResult
-                ) & {
-                  requestConfig: TRequestConfig
+                
+                type RequestConfig = {
+                  path: string
+                  method: Method
+                  dataKey: string
                 }
 
                 ${content.join('\n\n').trim()}
@@ -884,70 +868,17 @@ export class Generator {
         syntheticalConfig.typesOnly
           ? ''
           : dedent`
-            ${genComment(title => `接口 ${title} 的 **请求配置的类型**`)}
-            type ${requestConfigTypeName} = Readonly<RequestConfig<
-              ${JSON.stringify(syntheticalConfig.mockUrl)},
-              ${JSON.stringify(syntheticalConfig.devUrl)},
-              ${JSON.stringify(syntheticalConfig.prodUrl)},
-              ${JSON.stringify(extendedInterfaceInfo.path)},
-              ${JSON.stringify(syntheticalConfig.dataKey) || 'undefined'},
-              ${paramNameType},
-              ${queryNameType},
-              ${JSON.stringify(isRequestDataOptional)}
-            >>
-
             ${genComment(title => `接口 ${title} 的 **请求配置**`)}
-            const ${requestConfigName}: ${requestConfigTypeName} = ${COMPRESSOR_TREE_SHAKING_ANNOTATION} {
-              mockUrl: mockUrl${categoryUID},
-              devUrl: devUrl${categoryUID},
-              prodUrl: prodUrl${categoryUID},
+            const ${requestConfigName}: RequestConfig = ${COMPRESSOR_TREE_SHAKING_ANNOTATION} {
               path: ${JSON.stringify(extendedInterfaceInfo.path)},
               method: Method.${extendedInterfaceInfo.method},
-              requestHeaders: ${JSON.stringify(
-                (extendedInterfaceInfo.req_headers || [])
-                  .filter(item => item.name.toLowerCase() !== 'content-type')
-                  .reduce<Record<string, string>>((res, item) => {
-                    res[item.name] = item.value
-                    return res
-                  }, {}),
-              )},
-              requestBodyType: RequestBodyType.${
-                extendedInterfaceInfo.method === Method.GET
-                  ? RequestBodyType.query
-                  : extendedInterfaceInfo.req_body_type /* istanbul ignore next */ ||
-                    RequestBodyType.none
-              },
-              responseBodyType: ResponseBodyType.${
-                extendedInterfaceInfo.res_body_type
-              },
-              dataKey: dataKey${categoryUID},
-              paramNames: ${paramNamesLiteral},
-              queryNames: ${queryNamesLiteral},
-              requestDataOptional: ${JSON.stringify(isRequestDataOptional)},
-              requestDataJsonSchema: ${JSON.stringify(
-                syntheticalConfig.jsonSchema?.enabled &&
-                  syntheticalConfig.jsonSchema?.requestData !== false
-                  ? requestDataJsonSchema
-                  : {},
-              )},
-              responseDataJsonSchema: ${JSON.stringify(
-                syntheticalConfig.jsonSchema?.enabled &&
-                  syntheticalConfig.jsonSchema?.responseData !== false
-                  ? responseDataJsonSchema
-                  : {},
-              )},
-              requestFunctionName: ${JSON.stringify(requestFunctionName)},
-              queryStringArrayFormat: QueryStringArrayFormat.${
-                syntheticalConfig.queryStringArrayFormat ||
-                QueryStringArrayFormat.brackets
-              },
-              extraInfo: ${JSON.stringify(requestFunctionExtraInfo)},
+              dataKey: dataKey${categoryUID}
             }
 
             ${genComment(title => `接口 ${title} 的 **请求函数**`)}
             export const ${requestFunctionName} = ${COMPRESSOR_TREE_SHAKING_ANNOTATION} (options?: RequestOptions) => {
               return request<${requestDataTypeName}, ${responseDataTypeName}>(
-                prepare(${requestConfigName}, {}),
+                ${requestConfigName},
                 options,
               )
             }
