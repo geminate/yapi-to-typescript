@@ -487,7 +487,7 @@ export class Generator {
                 import type { RequestConfig } from '@geminate/yapi-to-typescript'
                 // @ts-ignore
                 // prettier-ignore
-                import type { RequestOptions } from ${JSON.stringify(
+                import type { UseAxiosOptions } from ${JSON.stringify(
                   getNormalizedRelativePath(
                     outputFilePath,
                     requestFunctionFilePath.replace('.ts', '.d.ts'),
@@ -943,7 +943,7 @@ export class Generator {
             }
 
             ${genComment(title => `接口 ${title} 的 **请求函数**`)}
-            export const ${requestFunctionName} = ${COMPRESSOR_TREE_SHAKING_ANNOTATION} (options?: RequestOptions) => {
+            export const ${requestFunctionName} = ${COMPRESSOR_TREE_SHAKING_ANNOTATION} (options?: UseAxiosOptions) => {
               return request<${requestDataTypeName}, ${responseDataTypeName}>(
                 prepare(${requestConfigName}, {}),
                 options,
