@@ -481,12 +481,21 @@ export class Generator {
               : dedent`
                 // @ts-ignore
                 // prettier-ignore
-                import { QueryStringArrayFormat, Method, RequestBodyType, ResponseBodyType, FileData, prepare } from '@geminate/yapi-to-typescript'
+                import { QueryStringArrayFormat, Method, RequestBodyType, ResponseBodyType, prepare } from '@geminate/yapi-to-typescript'
                 // @ts-ignore
                 // prettier-ignore
-                import type { RequestConfig, RequestFunctionRestArgs } from '@geminate/yapi-to-typescript'
+                import type { RequestConfig } from '@geminate/yapi-to-typescript'
                 // @ts-ignore
-                import request, { RequestOptions } from ${JSON.stringify(
+                // prettier-ignore
+                import type { RequestOptions } from ${JSON.stringify(
+                  getNormalizedRelativePath(
+                    outputFilePath,
+                    requestFunctionFilePath.replace('.ts', '.d.ts'),
+                  ),
+                )}
+                // @ts-ignore
+                // prettier-ignore
+                import request from ${JSON.stringify(
                   getNormalizedRelativePath(
                     outputFilePath,
                     requestFunctionFilePath,
@@ -505,17 +514,6 @@ export class Generator {
                         ),
                       )}
                     `
-                }
-
-                type UserRequestRestArgs = RequestFunctionRestArgs<typeof request>
-
-                // Request: 目前 React Hooks 功能有用到
-                export type Request<TRequestData, TRequestConfig extends RequestConfig, TRequestResult> = (
-                  TRequestConfig['requestDataOptional'] extends true
-                    ? (requestData?: TRequestData, ...args: RequestFunctionRestArgs<typeof request>) => TRequestResult
-                    : (requestData: TRequestData, ...args: RequestFunctionRestArgs<typeof request>) => TRequestResult
-                ) & {
-                  requestConfig: TRequestConfig
                 }
 
                 ${content.join('\n\n').trim()}
