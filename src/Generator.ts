@@ -943,9 +943,9 @@ export class Generator {
             }
 
             ${genComment(title => `接口 ${title} 的 **请求函数**`)}
-            export const ${requestFunctionName} = ${COMPRESSOR_TREE_SHAKING_ANNOTATION} (options?: UseAxiosOptions) => {
+            export const ${requestFunctionName} = ${COMPRESSOR_TREE_SHAKING_ANNOTATION} (options?: UseAxiosOptions, params?:${requestDataTypeName}) => {
               return request<${requestDataTypeName}, ${responseDataTypeName}>(
-                prepare(${requestConfigName}, {}),
+                prepare(${requestConfigName}, params),
                 options,
               )
             }
