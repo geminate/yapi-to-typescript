@@ -467,6 +467,7 @@ export class Generator {
         const rawOutputContent = dedent`
           /* tslint:disable */
           /* eslint-disable */
+          /* noinspection all */
 
           /* 该文件由 yapi-to-typescript 自动生成，请勿直接修改！！！ */
 
