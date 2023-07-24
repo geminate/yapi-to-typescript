@@ -457,13 +457,7 @@ export class Generator {
           // noinspection all
 
           /* 该文件由 yapi-to-typescript 自动生成，请勿直接修改！！！ */
-          
-          export interface YapiPayload<TReq> {
-              path: string
-              method: Method
-              data?: TReq
-          }
-
+                   
           ${
             syntheticalConfig.typesOnly
               ? dedent`
@@ -475,7 +469,7 @@ export class Generator {
               : dedent`
                 // @ts-ignore
                 // prettier-ignore
-                import type { Method } from '@geminate/yapi-to-typescript'
+                import { Method } from '@geminate/yapi-to-typescript'
                 // @ts-ignore
                 // prettier-ignore
                 import type { UseAxiosOptions } from ${JSON.stringify(
@@ -510,6 +504,13 @@ export class Generator {
                 ${content.join('\n\n').trim()}
               `
           }
+          
+          export interface YapiPayload<TReq> {
+              path: string
+              method: Method
+              data?: TReq
+          }
+          
         `
         // ref: https://prettier.io/docs/en/options.html
         const prettyOutputContent = prettier.format(rawOutputContent, {
@@ -874,7 +875,7 @@ export class Generator {
           ? ''
           : dedent`
             ${genComment(title => `接口 ${title} 的 **请求配置**`)}
-            const ${requestConfigName}: YapiPayload<${requestDataType.trim()}> = ${COMPRESSOR_TREE_SHAKING_ANNOTATION} {
+            const ${requestConfigName}: YapiPayload<${requestDataTypeName}> = ${COMPRESSOR_TREE_SHAKING_ANNOTATION} {
               path: ${JSON.stringify(extendedInterfaceInfo.path)},
               method: Method.${extendedInterfaceInfo.method}
             }
