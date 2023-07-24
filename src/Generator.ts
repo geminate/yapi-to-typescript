@@ -257,20 +257,7 @@ export class Generator {
                               ).map(categoryUID =>
                                 syntheticalConfig.typesOnly
                                   ? ''
-                                  : dedent`
-                                      const mockUrl${categoryUID} = ${JSON.stringify(
-                                      syntheticalConfig.mockUrl,
-                                    )} as any
-                                      const devUrl${categoryUID} = ${JSON.stringify(
-                                      syntheticalConfig.devUrl,
-                                    )} as any
-                                      const prodUrl${categoryUID} = ${JSON.stringify(
-                                      syntheticalConfig.prodUrl,
-                                    )} as any
-                                      const dataKey${categoryUID} = ${JSON.stringify(
-                                      syntheticalConfig.dataKey,
-                                    )} as any
-                                    `,
+                                  : dedent``,
                               ),
                               ...sortByWeights(
                                 groupedInterfaceCodes[outputFilePath],
@@ -470,6 +457,12 @@ export class Generator {
           // noinspection all
 
           /* 该文件由 yapi-to-typescript 自动生成，请勿直接修改！！！ */
+          
+          export interface YapiPayload<TReq> {
+              path: string
+              method: Method
+              data?: TReq
+          }
 
           ${
             syntheticalConfig.typesOnly
@@ -482,10 +475,7 @@ export class Generator {
               : dedent`
                 // @ts-ignore
                 // prettier-ignore
-                import { QueryStringArrayFormat, Method, RequestBodyType, ResponseBodyType, prepare } from '@geminate/yapi-to-typescript'
-                // @ts-ignore
-                // prettier-ignore
-                import type { RequestConfig } from '@geminate/yapi-to-typescript'
+                import type { Method } from '@geminate/yapi-to-typescript'
                 // @ts-ignore
                 // prettier-ignore
                 import type { UseAxiosOptions } from ${JSON.stringify(
@@ -883,70 +873,16 @@ export class Generator {
         syntheticalConfig.typesOnly
           ? ''
           : dedent`
-            ${genComment(title => `接口 ${title} 的 **请求配置的类型**`)}
-            type ${requestConfigTypeName} = Readonly<RequestConfig<
-              ${JSON.stringify(syntheticalConfig.mockUrl)},
-              ${JSON.stringify(syntheticalConfig.devUrl)},
-              ${JSON.stringify(syntheticalConfig.prodUrl)},
-              ${JSON.stringify(extendedInterfaceInfo.path)},
-              ${JSON.stringify(syntheticalConfig.dataKey) || 'undefined'},
-              ${paramNameType},
-              ${queryNameType},
-              ${JSON.stringify(isRequestDataOptional)}
-            >>
-
             ${genComment(title => `接口 ${title} 的 **请求配置**`)}
-            const ${requestConfigName}: ${requestConfigTypeName} = ${COMPRESSOR_TREE_SHAKING_ANNOTATION} {
-              mockUrl: mockUrl${categoryUID},
-              devUrl: devUrl${categoryUID},
-              prodUrl: prodUrl${categoryUID},
+            const ${requestConfigName}: YapiPayload<${requestDataType.trim()}> = ${COMPRESSOR_TREE_SHAKING_ANNOTATION} {
               path: ${JSON.stringify(extendedInterfaceInfo.path)},
-              method: Method.${extendedInterfaceInfo.method},
-              requestHeaders: ${JSON.stringify(
-                (extendedInterfaceInfo.req_headers || [])
-                  .filter(item => item.name.toLowerCase() !== 'content-type')
-                  .reduce<Record<string, string>>((res, item) => {
-                    res[item.name] = item.value
-                    return res
-                  }, {}),
-              )},
-              requestBodyType: RequestBodyType.${
-                extendedInterfaceInfo.method === Method.GET
-                  ? RequestBodyType.query
-                  : extendedInterfaceInfo.req_body_type /* istanbul ignore next */ ||
-                    RequestBodyType.none
-              },
-              responseBodyType: ResponseBodyType.${
-                extendedInterfaceInfo.res_body_type
-              },
-              dataKey: dataKey${categoryUID},
-              paramNames: ${paramNamesLiteral},
-              queryNames: ${queryNamesLiteral},
-              requestDataOptional: ${JSON.stringify(isRequestDataOptional)},
-              requestDataJsonSchema: ${JSON.stringify(
-                syntheticalConfig.jsonSchema?.enabled &&
-                  syntheticalConfig.jsonSchema?.requestData !== false
-                  ? requestDataJsonSchema
-                  : {},
-              )},
-              responseDataJsonSchema: ${JSON.stringify(
-                syntheticalConfig.jsonSchema?.enabled &&
-                  syntheticalConfig.jsonSchema?.responseData !== false
-                  ? responseDataJsonSchema
-                  : {},
-              )},
-              requestFunctionName: ${JSON.stringify(requestFunctionName)},
-              queryStringArrayFormat: QueryStringArrayFormat.${
-                syntheticalConfig.queryStringArrayFormat ||
-                QueryStringArrayFormat.brackets
-              },
-              extraInfo: ${JSON.stringify(requestFunctionExtraInfo)},
+              method: Method.${extendedInterfaceInfo.method}
             }
 
             ${genComment(title => `接口 ${title} 的 **请求函数**`)}
             export const ${requestFunctionName} = ${COMPRESSOR_TREE_SHAKING_ANNOTATION} (options?: UseAxiosOptions<${responseDataTypeName}>, params?:${requestDataTypeName}) => {
               return request<${requestDataTypeName}, ${responseDataTypeName}>(
-                prepare(${requestConfigName}, params),
+                { ...${requestConfigName}, data: params },
                 options,
               )
             }
