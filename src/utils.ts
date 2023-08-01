@@ -405,7 +405,7 @@ export async function jsonSchemaToType(
   typeName: string,
 ): Promise<string> {
   if (isEmpty(jsonSchema)) {
-    return `export interface ${typeName} {}`
+    return `export type ${typeName} = {}`
   }
   if (jsonSchema.__is_any__) {
     delete jsonSchema.__is_any__

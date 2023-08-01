@@ -58,7 +58,7 @@ interface OutputFileList {
  * @see https://webpack.js.org/guides/tree-shaking/#mark-a-function-call-as-side-effect-free
  * @see https://terser.org/docs/api-reference.html#annotations
  */
-const COMPRESSOR_TREE_SHAKING_ANNOTATION = '/*#__PURE__*/'
+const COMPRESSOR_TREE_SHAKING_ANNOTATION = '/'
 
 export class Generator {
   /** 配置 */
@@ -844,7 +844,7 @@ export class Generator {
         .filter(item => typeof item !== 'boolean' && !isEmpty(item.value))
         .map(item => {
           const _item: Exclude<typeof summary[0], boolean> = item as any
-          return `* @${_item.label} ${castArray(_item.value).join(', ')}`
+          return `* ${_item.label} ${castArray(_item.value).join(', ')}`
         })
         .join('\n')
       return dedent`
