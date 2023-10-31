@@ -58,7 +58,7 @@ interface OutputFileList {
  * @see https://webpack.js.org/guides/tree-shaking/#mark-a-function-call-as-side-effect-free
  * @see https://terser.org/docs/api-reference.html#annotations
  */
-const COMPRESSOR_TREE_SHAKING_ANNOTATION = '/'
+const COMPRESSOR_TREE_SHAKING_ANNOTATION = ''
 
 export class Generator {
   /** 配置 */
@@ -457,7 +457,7 @@ export class Generator {
           // noinspection all
 
           /* 该文件由 yapi-to-typescript 自动生成，请勿直接修改！！！ */
-                   
+
           ${
             syntheticalConfig.typesOnly
               ? dedent`
@@ -467,6 +467,9 @@ export class Generator {
                 ${content.join('\n\n').trim()}
               `
               : dedent`
+                // @ts-ignore
+                // prettier-ignore
+                import { Method, FileData } from '@geminate/yapi-to-typescript'
                 // @ts-ignore
                 // prettier-ignore
                 import { Method } from '@geminate/yapi-to-typescript'
@@ -504,13 +507,14 @@ export class Generator {
                 ${content.join('\n\n').trim()}
               `
           }
-          
+
           export interface YapiPayload<TReq> {
               path: string
               method: Method
               data?: TReq
+              extraInfo: any
           }
-          
+
         `
         // ref: https://prettier.io/docs/en/options.html
         const prettyOutputContent = prettier.format(rawOutputContent, {
@@ -877,7 +881,8 @@ export class Generator {
             ${genComment(title => `接口 ${title} 的 **请求配置**`)}
             const ${requestConfigName}: YapiPayload<${requestDataTypeName}> = ${COMPRESSOR_TREE_SHAKING_ANNOTATION} {
               path: ${JSON.stringify(extendedInterfaceInfo.path)},
-              method: Method.${extendedInterfaceInfo.method}
+              method: Method.${extendedInterfaceInfo.method},
+              extraInfo: ${JSON.stringify(requestFunctionExtraInfo)}
             }
 
             ${genComment(title => `接口 ${title} 的 **请求函数**`)}
