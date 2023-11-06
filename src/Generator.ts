@@ -461,15 +461,15 @@ export class Generator {
           ${
             syntheticalConfig.typesOnly
               ? dedent`
-                // @ts-ignore
-                type FileData = File
-
                 ${content.join('\n\n').trim()}
               `
               : dedent`
                 // @ts-ignore
                 // prettier-ignore
-                import { Method, FileData } from '@geminate/yapi-to-typescript'
+                type FileData = File
+                // @ts-ignore
+                // prettier-ignore
+                import { Method } from '@geminate/yapi-to-typescript'
                 // @ts-ignore
                 // prettier-ignore
                 import { Method } from '@geminate/yapi-to-typescript'
